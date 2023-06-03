@@ -6,6 +6,7 @@ class RecordCount extends StatefulWidget {
   final ValueNotifier<bool> makeProgressRed;
   final ValueNotifier<bool> clearVideoRecord;
   final AppTheme appTheme;
+  final bool cropImage;
 
   const RecordCount({
     Key? key,
@@ -13,6 +14,7 @@ class RecordCount extends StatefulWidget {
     required this.startVideoCount,
     required this.makeProgressRed,
     required this.clearVideoRecord,
+    required this.cropImage,
   }) : super(key: key);
 
   @override
@@ -109,7 +111,7 @@ class RecordCountState extends State<RecordCount>
           maintainAnimation: true,
           maintainState: true,
           child: Padding(
-            padding: const EdgeInsets.only(top: 30),
+            padding: EdgeInsets.only(top: (!widget.cropImage)? 5 : 30),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

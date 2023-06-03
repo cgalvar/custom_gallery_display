@@ -26,6 +26,7 @@ class CustomCameraDisplay extends StatefulWidget {
   final ValueNotifier<bool> clearVideoRecord;
   final AsyncValueSetter<SelectedImagesDetails>? sendRequestFunction;
   final ValueNotifier<File?> videoRecordFile;
+  final bool cropImage;
 
   const CustomCameraDisplay({
     Key? key,
@@ -41,6 +42,7 @@ class CustomCameraDisplay extends StatefulWidget {
     required this.replacingTabBar,
     required this.clearVideoRecord,
     required this.moveToVideoScreen,
+    required this.cropImage,
   }) : super(key: key);
 
   @override
@@ -144,15 +146,25 @@ class CustomCameraDisplayState extends State<CustomCameraDisplay> {
                   child: CameraPreview(controller),
                 ),
               ] else ...[
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Container(
-                    color: whiteColor,
-                    height: previewHeight + 10,
+
+                if (widget.cropImage)
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Container(
+                      color: whiteColor,
+                      height: previewHeight + 10,
+                      width: double.infinity,
+                      child: buildCrop(selectedImage),
+                    ),
+                  )
+                else 
+                  SizedBox(
                     width: double.infinity,
-                    child: buildCrop(selectedImage),
+                    child: Image.file(
+                      selectedImage,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                )
               ],
               buildFlashIcons(),
               buildPickImageContainer(whiteColor, context),
@@ -163,7 +175,52 @@ class CustomCameraDisplayState extends State<CustomCameraDisplay> {
     );
   }
 
-  Align buildPickImageContainer(Color whiteColor, BuildContext context) {
+  Widget buildPickImageContainer(Color whiteColor, BuildContext context) {
+
+    if (!widget.cropImage) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [ 
+          Container(
+            color: Colors.transparent,
+            width: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 1.0),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: RecordCount(
+                      appTheme: widget.appTheme,
+                      startVideoCount: startVideoCount,
+                      makeProgressRed: widget.redDeleteText,
+                      clearVideoRecord: widget.clearVideoRecord,
+                      cropImage: widget.cropImage,
+                    ),
+                  ),
+                ),
+                Stack(
+                  alignment: Alignment.topCenter,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: cameraButton(context),
+                      ),
+                    ),
+                    Positioned(bottom: 120, child: videoStatusAnimation),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ]
+      );
+    }
+
     double previewHeight = MediaQuery.of(context).size.height / 2;
 
     return Align(
@@ -185,6 +242,7 @@ class CustomCameraDisplayState extends State<CustomCameraDisplay> {
                   startVideoCount: startVideoCount,
                   makeProgressRed: widget.redDeleteText,
                   clearVideoRecord: widget.clearVideoRecord,
+                  cropImage: widget.cropImage,
                 ),
               ),
             ),
@@ -207,6 +265,8 @@ class CustomCameraDisplayState extends State<CustomCameraDisplay> {
         ),
       ),
     );
+
+    
   }
 
   Align buildFlashIcons() {
@@ -320,6 +380,11 @@ class CustomCameraDisplayState extends State<CustomCameraDisplay> {
   }
 
   Future<File?> cropImage(File imageFile) async {
+
+    if (widget.cropImage == false) {
+      return null;
+    }
+
     await ImageCrop.requestPermissions();
     final scale = cropKey.currentState!.scale;
     final area = cropKey.currentState!.area;

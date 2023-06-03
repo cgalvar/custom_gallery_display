@@ -289,6 +289,7 @@ class CustomGalleryDisplayState extends State<CustomGalleryDisplay>
         redDeleteText: redDeleteText,
         moveToVideoScreen: moveToVideo,
         selectedVideo: selectedVideoValue,
+        cropImage: cropImage,
       ),
     );
   }

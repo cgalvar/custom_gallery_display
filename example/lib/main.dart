@@ -245,10 +245,11 @@ class _MyHomePageState extends State<MyHomePage> {
     return ElevatedButton(
       onPressed: () async {
         Navigator.of(context).push(CupertinoDialogRoute(
-            builder: (context) => CustomGalleryDisplay.normalDisplay(
+            builder: (context) => CustomGalleryDisplay.instagramDisplay(
                 displaySource: DisplaySource.camera,
                 pickerSource: PickerSource.both,
                 multiSelection: true,
+                cropImage: false,
                 onDone: (SelectedImagesDetails details) async {
                   displayDetails(details);
                 }),

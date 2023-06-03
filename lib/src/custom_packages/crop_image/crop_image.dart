@@ -46,7 +46,7 @@ class CustomCrop extends StatefulWidget {
 }
 
 class CustomCropState extends State<CustomCrop>
-    with TickerProviderStateMixin, Drag {
+    with TickerProviderStateMixin {
   final _surfaceKey = GlobalKey();
 
   late final AnimationController _activeController;
